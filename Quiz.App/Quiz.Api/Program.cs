@@ -1,7 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using Quiz.Core;
 using Quiz.Infrastructure;
+using Quiz.Infrastructure.Data.EF;
 
 var builder = WebApplication.CreateBuilder(args);
+
+Config.SetConfigurationProvider(DependencyResolver.GetConfigurationProvider());
 
 // Add services to the container.
 
@@ -10,7 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-Config.SetConfigurationProvider(DependencyResolver.GetConfigurationProvider());
+builder.Services.AddDbContext<QuizDbContext>(x => x.UseSqlServer(Config.DB));
 
 
 var app = builder.Build();
