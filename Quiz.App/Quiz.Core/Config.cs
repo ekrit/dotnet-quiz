@@ -12,7 +12,7 @@ public class Config
         _provider = provider;
     }
     
-    public static string DB => _provider.GetString("appSettings:DB");
+    public static string DB => _provider.GetString("DB");
     
     public static string ContentRoot => Directory.GetCurrentDirectory();
 

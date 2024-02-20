@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Quiz.Core;
 using Quiz.Core.Models;
 
 namespace Quiz.Infrastructure.Data.EF
@@ -9,5 +10,15 @@ namespace Quiz.Infrastructure.Data.EF
         {
         }
         public DbSet<Bezveze> Bezveze { get; set; }
+        
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(Config.DB);
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

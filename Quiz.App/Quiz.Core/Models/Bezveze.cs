@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Quiz.Core.Models;
 
+[Table("Bezveze")]
 public class Bezveze
 {
     [Key]

@@ -1,11 +1,34 @@
 {
   "Version": 1,
-  "Hash": "/0HcjgzbBHwr6covrn3jyIJiFt72kYV8DKprWnYO7EE=",
+  "Hash": "Qbh3fstfxjvqUYcV8lRyiQfltQWWi5lUzQCj7Typs5w=",
   "Source": "Quiz.Api",
   "BasePath": "_content/Quiz.Api",
   "Mode": "Default",
   "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\Quiz\\dotnet-quiz\\Quiz.App\\Quiz.Core\\Quiz.Core.csproj",
+      "Version": 2,
+      "Source": "Quiz.Core",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework"
+    },
+    {
+      "Identity": "C:\\Quiz\\dotnet-quiz\\Quiz.App\\Quiz.Infrastructure\\Quiz.Infrastructure.csproj",
+      "Version": 2,
+      "Source": "Quiz.Infrastructure",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework"
+    }
+  ],
   "DiscoveryPatterns": [],
   "Assets": []
 }
