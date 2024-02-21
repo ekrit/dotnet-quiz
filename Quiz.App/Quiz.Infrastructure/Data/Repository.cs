@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Quiz.Core.Interfaces;
 using Quiz.Infrastructure.Data.EF;
 
@@ -12,6 +17,50 @@ namespace Quiz.Infrastructure.Data
         public Repository(QuizDbContext db)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
+        }
+        
+        public async Task Add(T entity)
+        {
+            await _db.Set<T>().AddAsync(entity);
+        }
+
+        public async Task Add(IEnumerable<T> entities)
+        {
+            await _db.Set<T>().AddRangeAsync(entities);
+        }
+
+        public void Update(T entity)
+        {
+            _db.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void Delete(T entity)
+        {
+            if (_db.Entry(entity).State == EntityState.Detached)
+                _db.Entry(entity).State = EntityState.Unchanged;
+            _db.Set<T>().Remove(entity);
+        }
+
+        public void Delete(IEnumerable<T> entities)
+        {
+            foreach (var entity in entities)
+            {
+                Delete(entity);
+            }
+        }
+        public bool Exists(Expression<Func<T, bool>> whereCondition)
+        {
+            return _db.Set<T>().Any(whereCondition);
+        }
+
+        public IEnumerable<T> GetAll()
+        {
+            return _db.Set<T>().ToList();
+        }
+        
+        public IEnumerable<T> Get(Expression<Func<T, bool>> whereCondition)
+        {
+            return _db.Set<T>().Where(whereCondition).ToList();
         }
     }
 }
