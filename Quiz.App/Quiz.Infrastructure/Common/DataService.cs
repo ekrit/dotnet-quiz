@@ -16,7 +16,7 @@ public abstract class DataService
         _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
     }
     
-    protected IUnitOfWork NewUnitOfWork(Enums.UnitOfWorkMode mode = Enums.UnitOfWorkMode.ReadOnly)
+    protected IUnitOfWork NewUnitOfWork(UnitOfWorkMode mode = UnitOfWorkMode.ReadOnly)
     {
         return _unitOfWorkFactory.Create(mode);
     }
