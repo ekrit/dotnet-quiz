@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Quiz.Core;
 using Quiz.Core.Interfaces;
-using Quiz.Infrastructure;
+using Quiz.Infrastructure.Common;
 using Quiz.Infrastructure.Data;
 using Quiz.Infrastructure.Data.EF;
 

@@ -1,4 +1,4 @@
-﻿namespace Quiz.Infrastructure;
+﻿namespace Quiz.Infrastructure.Common;
 
 public class DependencyResolver
 {
