@@ -2,9 +2,9 @@
 using Quiz.Core;
 using Quiz.Core.Extensions;
 
-namespace Quiz.Infrastructure;
+namespace Quiz.Infrastructure.Common;
 
-public class AppSettingsConfigurationProvider : Quiz.Core.Interfaces.IConfigurationProvider
+public class AppSettingsConfigurationProvider : Core.Interfaces.IConfigurationProvider
 {
     private readonly IConfigurationRoot _configuration;
 
@@ -24,7 +24,7 @@ public class AppSettingsConfigurationProvider : Quiz.Core.Interfaces.IConfigurat
 
         return defaultValue;
     }
-    
+
     private string GetSetting(string settingKey)
     {
         return _configuration[settingKey];
