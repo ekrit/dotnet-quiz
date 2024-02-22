@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\Quiz.Infrastructure\Quiz.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
