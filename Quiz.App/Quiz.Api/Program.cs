@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Quiz.Core;
 using Quiz.Core.Interfaces;
+using Quiz.Domain.Services;
 using Quiz.Infrastructure.Common;
 using Quiz.Infrastructure.Data;
 using Quiz.Infrastructure.Data.EF;
@@ -17,6 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
+builder.Services.AddScoped<IQuizService, QuizService>();
 
 builder.Services.AddDbContext<QuizDbContext>(x => x.UseSqlServer(Config.DB));
 

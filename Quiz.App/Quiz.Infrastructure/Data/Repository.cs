@@ -62,5 +62,10 @@ namespace Quiz.Infrastructure.Data
         {
             return _db.Set<T>().Where(whereCondition).ToList();
         }
+
+        public async Task<T> GetById(int id)
+        {
+            return await _db.Set<T>().FindAsync(id);
+        }
     }
 }

@@ -16,5 +16,6 @@ public interface IRepository<T>
     bool Exists(Expression<Func<T, bool>> whereCondition);
     IEnumerable<T> GetAll();
     IEnumerable<T> Get(Expression<Func<T, bool>> whereCondition);
-    
+    Task<T> GetById(int id);
+
 }
