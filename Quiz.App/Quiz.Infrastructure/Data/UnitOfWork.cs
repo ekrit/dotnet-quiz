@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Quiz.Core;
 using Quiz.Core.Interfaces;
 using Quiz.Infrastructure.Data.EF;
@@ -16,16 +17,16 @@ public class UnitOfWork : IUnitOfWork
         _mode = mode;
     }
     
-    public void Commit()
+    public async Task Commit()
     {
         if (_mode == Enums.UnitOfWorkMode.ReadOnly)
             throw new InvalidOperationException("Commit is not allowed in read-only UnitOfWork.");
 
-        Db.SaveChanges();
+        await Db.SaveChangesAsync();
     }
     
-    public void Dispose()
+    public async Task Dispose()
     {
-        Db.Dispose();
+        await Db.DisposeAsync();
     }
 }

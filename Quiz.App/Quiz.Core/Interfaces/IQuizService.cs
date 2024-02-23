@@ -8,12 +8,12 @@ namespace Quiz.Core.Interfaces;
 
 public interface IQuizService
 {
-    IEnumerable<Kviz> GetAllKvizovi();
-    Task<Kviz> GetKvizById(int id);
+    IEnumerable<KvizDto> GetAllKvizovi();
+    KvizDto GetKvizById(int id);
     IEnumerable<RecikliranoPitanje> GetAllReciklirana();
-    IEnumerable<Pitanje> GetAllPitanja();
-    Task<Kviz> CreateKviz(CreateKvizRequest noviKviz);
-    Task<Kviz> EditKviz(EditKvizRequest editKvizRequest);
-    Task<Kviz> DeleteKviz(int Id);
+    IEnumerable<PitanjeDto> GetAllPitanja();
+    Task<KvizDto> CreateKviz(CreateKvizRequest noviKviz);
+    Task<KvizDto> EditKviz(EditKvizRequest editKvizRequest);
+    Task<KvizDto> DeleteKviz(int Id);
     Task<ExportKvizDto> GetKvizExport(int Id);
 }

@@ -9,4 +9,9 @@ public class Kviz
     public int KvizId { get; set; }
     public string Naziv { get; set; }
     public List<Pitanje> Pitanja { get; set; }
+    
+    public Kviz()
+    {
+        Pitanja = new List<Pitanje>();
+    }
 }

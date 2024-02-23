@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Quiz.Core.Models;
 
 namespace Quiz.Core.Interfaces;
 
@@ -15,7 +16,8 @@ public interface IRepository<T>
     void Delete(IEnumerable<T> entities);
     bool Exists(Expression<Func<T, bool>> whereCondition);
     IEnumerable<T> GetAll();
+    IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includes);
     IEnumerable<T> Get(Expression<Func<T, bool>> whereCondition);
-    Task<T> GetById(int id);
+    Task<T> GetById(params object[] keyValues);
 
 }
