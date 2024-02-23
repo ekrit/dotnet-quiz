@@ -9,31 +9,71 @@ namespace Quiz.Domain.Services;
 
 public class QuizService : DataService, IQuizService
 {
-    public QuizService(IUnitOfWorkFactory iUnitOfWorkFactory, IRepositoryFactory iRepositoryFactory) : base(iUnitOfWorkFactory, iRepositoryFactory)
+    private readonly IKvizRepositoryFactory _kvizRepositoryFactory;
+
+    public QuizService(IUnitOfWorkFactory iUnitOfWorkFactory, 
+        IRepositoryFactory iRepositoryFactory,
+        IKvizRepositoryFactory kvizRepositoryFactory) : base(iUnitOfWorkFactory, iRepositoryFactory)
     {
+        _kvizRepositoryFactory = kvizRepositoryFactory;
     }
 
-    public IEnumerable<Kviz> GetAllKvizovi()
+    public IEnumerable<KvizDto> GetAllKvizovi()
     {
-        var uow = NewUnitOfWork();
-        return NewRepository<Kviz>(uow).GetAll();
-    }
-    
-    public async Task<Kviz> GetKvizById(int id) => await NewRepository<Kviz>(NewUnitOfWork()).GetById(id);
+        var kvizovi = NewRepository<Kviz>(NewUnitOfWork()).GetAll(x=>x.Pitanja);
 
-    public IEnumerable<Pitanje> GetAllPitanja()
-    {
-        var uow = NewUnitOfWork();
-        return NewRepository<Pitanje>(uow).GetAll();
+        return kvizovi.Select(kviz => new KvizDto()
+            {
+                KvizId = kviz.KvizId,
+                Naziv = kviz.Naziv,
+                Pitanja = kviz.Pitanja.Select(x => new PitanjeDto()
+                    {
+                        PitanjeId = x.PitanjeId,
+                        Sadrzaj = x.Sadrzaj,
+                        Odgovor = x.Odgovor
+                    }
+                ).ToList()
+            }
+        ).ToList();
     }
-    
+
+    public KvizDto GetKvizById(int id)
+    {
+        var kviz = _kvizRepositoryFactory.Create(NewUnitOfWork()).GetKvizById(id);
+        
+        return new KvizDto()
+        {
+            KvizId = kviz.KvizId,
+            Naziv = kviz.Naziv,
+            Pitanja = kviz.Pitanja.Select(x => new PitanjeDto()
+                {
+                    PitanjeId = x.PitanjeId,
+                    Sadrzaj = x.Sadrzaj,
+                    Odgovor = x.Odgovor
+                }
+            ).ToList()
+        };
+    }
+
+    public IEnumerable<PitanjeDto> GetAllPitanja()
+    {
+        var pitanja = NewRepository<Pitanje>(NewUnitOfWork()).GetAll();
+
+        return pitanja.Select(data => new PitanjeDto()
+            {
+                PitanjeId = data.PitanjeId,
+                Sadrzaj = data.Sadrzaj,
+                Odgovor = data.Odgovor
+            }
+        ).ToList();
+    }
+
     public IEnumerable<RecikliranoPitanje> GetAllReciklirana()
     {
-        var uow = NewUnitOfWork();
-        return NewRepository<RecikliranoPitanje>(uow).GetAll();
+        return NewRepository<RecikliranoPitanje>(NewUnitOfWork()).GetAll();
     }
 
-    public async Task<Kviz> CreateKviz(CreateKvizRequest noviKviz)
+    public async Task<KvizDto> CreateKviz(CreateKvizRequest noviKvizRequest)
     {
         var uow = NewUnitOfWork(Enums.UnitOfWorkMode.Writable);
         var kvizRepo = NewRepository<Kviz>(uow);
@@ -42,62 +82,69 @@ public class QuizService : DataService, IQuizService
 
         var recikliranaPitanja = recikliranaRepo.GetAll();
 
-        var newKviz = new Kviz()
+        var noviKviz = new Kviz()
         {
-            Naziv = noviKviz.Naziv
+            Naziv = noviKvizRequest.Naziv
         };
 
-        await kvizRepo.Add(newKviz);
+        await kvizRepo.Add(noviKviz);
+        await uow.Commit();
 
         var novaPitanja = new List<Pitanje>();
 
-        foreach (var pitanje in noviKviz.Pitanja)
+        foreach (var pitanje in noviKvizRequest.Pitanja)
         {
             var existingQuestion = recikliranaPitanja.FirstOrDefault(x => x.Sadrzaj == pitanje.Sadrzaj);
             if (existingQuestion != null)
             {
-                // Ako pitanje ne postoji u recikliranim pitanjima, potrebno je kreirati novo pitanje te ga dodati u bazu
-                // i spremiti u listu koja će kasnije biti uvrštena u kviz
-                
                 var novoPitanje = new Pitanje()
                 {
                     Sadrzaj = pitanje.Sadrzaj,
                     Odgovor = pitanje.Odgovor,
-                    KvizId = newKviz.KvizId
-                };
-
-                await pitanjeRepo.Add(novoPitanje);
-                
-                novaPitanja.Add(novoPitanje);
-            }
-            else
-            {
-                // Ako pitanje postoji među recikliranim pitanjima, potrebno ga je premjestiti u tabelu pitanje te ga dodati u listu
-                // također izbrisati ga iz tabele reciklirana pitanja
-                
-                var novoPitanje = new Pitanje()
-                {
-                    Sadrzaj = existingQuestion.Sadrzaj,
-                    Odgovor = existingQuestion.Odgovor,
-                    KvizId = newKviz.KvizId
+                    KvizId = noviKviz.KvizId
                 };
 
                 await pitanjeRepo.Add(novoPitanje);
                 recikliranaRepo.Delete(existingQuestion);
-                
+
+                novaPitanja.Add(novoPitanje);
+            }
+            else
+            {
+                var novoPitanje = new Pitanje()
+                {
+                    Sadrzaj = pitanje.Sadrzaj,
+                    Odgovor = pitanje.Odgovor,
+                    KvizId = noviKviz.KvizId
+                };
+
+                await pitanjeRepo.Add(novoPitanje);
+
                 novaPitanja.Add(novoPitanje);
             }
         }
 
-        newKviz.Pitanja = novaPitanja;
+        await uow.Commit();
+        noviKviz.Pitanja = novaPitanja;
 
-        kvizRepo.Update(newKviz);
-        uow.Commit();
+        kvizRepo.Update(noviKviz);
+        await uow.Commit();
 
-        return newKviz;
+        return new KvizDto()
+        {
+            KvizId = noviKviz.KvizId,
+            Naziv = noviKviz.Naziv,
+            Pitanja = noviKviz.Pitanja.Select(data => new PitanjeDto()
+                {
+                    PitanjeId = data.PitanjeId,
+                    Sadrzaj = data.Sadrzaj,
+                    Odgovor = data.Odgovor
+                }
+            ).ToList()
+        };
     }
 
-    public async Task<Kviz> EditKviz(EditKvizRequest editKvizRequest)
+    public async Task<KvizDto> EditKviz(EditKvizRequest editKvizRequest)
     {
         var uow = NewUnitOfWork(Enums.UnitOfWorkMode.Writable);
         var kvizRepo = NewRepository<Kviz>(uow);
@@ -117,24 +164,43 @@ public class QuizService : DataService, IQuizService
             {
                 dbQuestion.Sadrzaj = editPitanje.Sadrzaj;
                 dbQuestion.Odgovor = editPitanje.Odgovor;
-                
+
                 pitanjeRepo.Update(dbQuestion);
             }
             else
             {
-                dbQuestion = new Pitanje { PitanjeId = editPitanje.PitanjeId, Sadrzaj = editPitanje.Sadrzaj, Odgovor = editPitanje.Odgovor};
+                dbQuestion = new Pitanje
+                {
+                    Sadrzaj = editPitanje.Sadrzaj, 
+                    Odgovor = editPitanje.Odgovor,
+                    KvizId = existingKviz.KvizId
+                };
                 await pitanjeRepo.Add(dbQuestion);
             }
+
             existingKviz.Pitanja.Add(dbQuestion);
         }
+        
+        await uow.Commit();
 
         kvizRepo.Update(existingKviz);
-        uow.Commit();
+        await uow.Commit();
 
-        return existingKviz;
+        return new KvizDto()
+        {
+            KvizId = existingKviz.KvizId,
+            Naziv = existingKviz.Naziv,
+            Pitanja = existingKviz.Pitanja.Select(data => new PitanjeDto()
+                {
+                    PitanjeId = data.PitanjeId,
+                    Sadrzaj = data.Sadrzaj,
+                    Odgovor = data.Odgovor
+                }
+            ).ToList()
+        };
     }
 
-    public async Task<Kviz> DeleteKviz(int Id)
+    public async Task<KvizDto> DeleteKviz(int Id)
     {
         var uow = NewUnitOfWork(Enums.UnitOfWorkMode.Writable);
         var kvizRepo = NewRepository<Kviz>(uow);
@@ -154,11 +220,23 @@ public class QuizService : DataService, IQuizService
             await recikliranaRepo.Add(novoReciklirano);
             pitanjeRepo.Delete(pitanje);
         }
+        await uow.Commit();
 
         kvizRepo.Delete(kvizToDelete);
-        uow.Commit();
+        await uow.Commit();
         
-        return kvizToDelete;
+        return new KvizDto()
+        {
+            KvizId = kvizToDelete.KvizId,
+            Naziv = kvizToDelete.Naziv,
+            Pitanja = kvizToDelete.Pitanja.Select(data => new PitanjeDto()
+                {
+                    PitanjeId = data.PitanjeId,
+                    Sadrzaj = data.Sadrzaj,
+                    Odgovor = data.Odgovor
+                }
+            ).ToList()
+        };
     }
 
     public async Task<ExportKvizDto> GetKvizExport(int Id)
@@ -169,7 +247,7 @@ public class QuizService : DataService, IQuizService
         {
             Naziv = kviz.Naziv,
             Pitanja = kviz.Pitanja.Select(x => x.Sadrzaj).ToList()
-        };;
+        };
     }
     
 }

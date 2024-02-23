@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Quiz.Core.Interfaces;
+using Quiz.Core.Models;
 using Quiz.Infrastructure.Data.EF;
 
 namespace Quiz.Infrastructure.Data
@@ -52,10 +53,19 @@ namespace Quiz.Infrastructure.Data
         {
             return _db.Set<T>().Any(whereCondition);
         }
-
+        
         public IEnumerable<T> GetAll()
         {
             return _db.Set<T>().ToList();
+        }
+
+        public IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _db.Set<T>();
+
+            query = includes.Aggregate(query, (current, include) => current.Include(include));
+
+            return query.ToList();
         }
         
         public IEnumerable<T> Get(Expression<Func<T, bool>> whereCondition)
@@ -63,9 +73,10 @@ namespace Quiz.Infrastructure.Data
             return _db.Set<T>().Where(whereCondition).ToList();
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(params object[] keyValues)
         {
-            return await _db.Set<T>().FindAsync(id);
+            return await _db.Set<T>().FindAsync(keyValues);
         }
+        
     }
 }

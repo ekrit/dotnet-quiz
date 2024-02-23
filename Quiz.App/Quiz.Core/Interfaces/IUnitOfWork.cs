@@ -1,7 +1,9 @@
-﻿namespace Quiz.Core.Interfaces;
+﻿using System.Threading.Tasks;
+
+namespace Quiz.Core.Interfaces;
 
 public interface IUnitOfWork
 {
-    void Commit();
-    void Dispose();
+    Task Commit();
+    Task Dispose();
 }
