@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Kviz>
+  <NazivKviza>string1</NazivKviza>
+  <Pitanje>
+    <Pitanje>string2</Pitanje>
+    <Pitanje>string4</Pitanje>
+    <Pitanje>string6</Pitanje>
+    <Pitanje>string8</Pitanje>
+  </Pitanje>
+</Kviz>

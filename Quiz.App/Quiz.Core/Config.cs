@@ -13,6 +13,7 @@ public class Config
     }
     
     public static string DB => _provider.GetString("DB");
+    public static string ExportDirectory => _provider.GetString("ExportDirectory");
     
     public static string ContentRoot => Directory.GetCurrentDirectory();
 

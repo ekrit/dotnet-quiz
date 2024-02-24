@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Quiz.Infrastructure\Quiz.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ExportedFiles\" />
+  </ItemGroup>
+
 </Project>
