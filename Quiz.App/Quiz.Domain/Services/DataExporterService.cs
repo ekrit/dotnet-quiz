@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Xml;
 using Newtonsoft.Json;
+using Quiz.Core;
 using Quiz.Core.Dtos;
 using Quiz.Core.Interfaces;
 using Formatting = Newtonsoft.Json.Formatting;
@@ -11,7 +12,9 @@ public class DataExporterService : IDataExportService
 {
     public Task ExportCsv(ExportKvizDto data, string fileName)
     {
-        using var writer = new StreamWriter(fileName);
+        var filePath = Path.Combine(Config.ExportDirectory, fileName);
+
+        using var writer = new StreamWriter(filePath);
     
         writer.WriteLine("NazivKviza,Pitanje");
     
@@ -25,7 +28,9 @@ public class DataExporterService : IDataExportService
 
     public Task ExportXml(ExportKvizDto data, string fileName)
     {
-        using var writer = XmlWriter.Create(fileName, new XmlWriterSettings { Indent = true });
+        var filePath = Path.Combine(Config.ExportDirectory, fileName);
+
+        using var writer = XmlWriter.Create(filePath, new XmlWriterSettings { Indent = true });
 
         writer.WriteStartElement("Kviz");
     
@@ -43,12 +48,14 @@ public class DataExporterService : IDataExportService
         return Task.CompletedTask;
     }
 
-    
     public Task ExportJson(ExportKvizDto data, string fileName)
     {
-        using var writer = new StreamWriter(fileName);
+        var filePath = Path.Combine(Config.ExportDirectory, fileName);
+
+        using var writer = new StreamWriter(filePath);
         var json = JsonConvert.SerializeObject(data, Formatting.Indented);
         writer.Write(json);
         return Task.CompletedTask;
     }
+
 }
