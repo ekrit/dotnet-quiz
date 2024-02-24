@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Quiz.Core.Interfaces;
-using Quiz.Core.Models;
 using Quiz.Infrastructure.Data.EF;
 
 namespace Quiz.Infrastructure.Data

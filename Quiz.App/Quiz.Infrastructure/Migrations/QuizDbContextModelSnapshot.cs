@@ -34,7 +34,7 @@ namespace Quiz.Infrastructure.Migrations
 
                     b.HasKey("KvizId");
 
-                    b.ToTable("Kviz");
+                    b.ToTable("Kviz", (string)null);
                 });
 
             modelBuilder.Entity("Quiz.Core.Models.Pitanje", b =>
@@ -58,7 +58,7 @@ namespace Quiz.Infrastructure.Migrations
 
                     b.HasIndex("KvizId");
 
-                    b.ToTable("Pitanje");
+                    b.ToTable("Pitanje", (string)null);
                 });
 
             modelBuilder.Entity("Quiz.Core.Models.RecikliranoPitanje", b =>
@@ -77,7 +77,7 @@ namespace Quiz.Infrastructure.Migrations
 
                     b.HasKey("RecikliranoPitanjeId");
 
-                    b.ToTable("RecikliranoPitanje");
+                    b.ToTable("RecikliranoPitanje", (string)null);
                 });
 
             modelBuilder.Entity("Quiz.Core.Models.Pitanje", b =>

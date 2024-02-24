@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Quiz.Core.Models;
 
 namespace Quiz.Core.Dtos.Requests;
 
@@ -12,7 +11,6 @@ public class EditKvizRequest
 
 public class EditPitanjeRequest
 {
-    public int PitanjeId { get; set; }
     public string Sadrzaj { get; set; }
     public string Odgovor { get; set; }
 }

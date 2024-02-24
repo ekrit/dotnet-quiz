@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Quiz.Core;
 using Quiz.Core.Interfaces;
 using Quiz.Infrastructure.Common;
 using Quiz.Infrastructure.Data.EF;

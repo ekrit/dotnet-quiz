@@ -23,6 +23,7 @@ builder.Services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
 builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 builder.Services.AddScoped<IKvizRepositoryFactory, KvizRepositoryFactory>();
 builder.Services.AddScoped<IQuizService, QuizService>();
+builder.Services.AddScoped<IDataExportService, DataExporterService>();
 
 builder.Services.AddControllers().AddNewtonsoftJson(x => 
     x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
@@ -38,9 +39,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//CreateKviz(CreateKvizRequest noviKviz) => await _iQuizService.CreateKviz(noviKviz);
-
 app.MapGet("/quiz/getAll", (IQuizService quizService) => quizService.GetAllKvizovi());
+app.MapGet("/quiz/getAllPitanja", (IQuizService quizService) => quizService.GetAllPitanja());
+app.MapGet("/quiz/getAllReciklirana", (IQuizService quizService) => quizService.GetAllReciklirana());
 app.MapGet("/quiz/getKvizById/{id}", (int id,IQuizService quizService) => quizService.GetKvizById(id));
 app.MapPost("/quiz/create", async ([FromBody] CreateKvizRequest noviKviz, IQuizService quizService) => await quizService.CreateKviz(noviKviz));
 app.MapPut("/quiz/edit", async ([FromBody] EditKvizRequest edit, IQuizService quizService) => await quizService.EditKviz(edit));
