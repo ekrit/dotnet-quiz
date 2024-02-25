@@ -1,4 +1,4 @@
-﻿using Quiz.Core;
+using Quiz.Core;
 using Quiz.Core.Dtos;
 using Quiz.Core.Dtos.Requests;
 using Quiz.Core.Interfaces;
@@ -132,8 +132,8 @@ public class QuizService : DataService, IQuizService
         }
 
         await uow.Commit();
+        
         newQuiz.Questions = editedQuestions;
-
         quizRepo.Update(newQuiz);
         await uow.Commit();
 
@@ -211,7 +211,7 @@ public class QuizService : DataService, IQuizService
         await uow.Commit();
 
         existingQuiz.Questions = editedQuestions;
-        
+
         quizRepo.Update(existingQuiz);
         await uow.Commit();
 
@@ -260,6 +260,7 @@ public class QuizService : DataService, IQuizService
             QuizId = quizToDelete.QuizId,
             Name = quizToDelete.Name,
             Questions = quizToDelete.Questions.Select(data => new QuiestionDto()
+
                 {
                     QuiestionId = data.QuestionId,
                     Text = data.Text,
