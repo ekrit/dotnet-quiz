@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Quiz.Core.Interfaces;
+﻿using Quiz.Core.Interfaces;
 
 namespace Quiz.Core;
 

@@ -17,20 +17,20 @@ public class DataExportController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IActionResult> exportData(int id, string format = "csv")
+    public async Task<IActionResult> ExportData(int id, string format = "csv")
     {
-        var data = await _quizService.GetKvizExport(id);
+        var data = await _quizService.GetQuizExport(id);
 
         switch (format)
         {   
             case "csv":
-                await _dataExporter.ExportCsv(data, "kviz_data.csv");
+                await _dataExporter.ExportCsv(data, "quiz_data.csv");
                 break;
             case "json":
-                await _dataExporter.ExportJson(data, "kviz_data.json");
+                await _dataExporter.ExportJson(data, "quiz_data.json");
                 break;
             case "xml":
-                await _dataExporter.ExportXml(data, "kviz_data.xml");
+                await _dataExporter.ExportXml(data, "quiz_data.xml");
                 break;
             default:
                 return Content("Format not supported!");

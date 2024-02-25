@@ -1,6 +1,6 @@
 ﻿namespace Quiz.Infrastructure.Common;
 
-public class DependencyResolver
+public static class DependencyResolver
 {
     public static Core.Interfaces.IConfigurationProvider GetConfigurationProvider()
     {

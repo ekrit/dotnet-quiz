@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Quiz.Core.Interfaces;
 using Quiz.Infrastructure.Data.EF;
@@ -40,14 +36,7 @@ namespace Quiz.Infrastructure.Data
                 _db.Entry(entity).State = EntityState.Unchanged;
             _db.Set<T>().Remove(entity);
         }
-
-        public void Delete(IEnumerable<T> entities)
-        {
-            foreach (var entity in entities)
-            {
-                Delete(entity);
-            }
-        }
+        
         public bool Exists(Expression<Func<T, bool>> whereCondition)
         {
             return _db.Set<T>().Any(whereCondition);
@@ -55,7 +44,7 @@ namespace Quiz.Infrastructure.Data
         
         public IEnumerable<T> GetAll()
         {
-            return _db.Set<T>().ToList();
+            return _db.Set<T>().ToList<T>();
         }
 
         public IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includes)

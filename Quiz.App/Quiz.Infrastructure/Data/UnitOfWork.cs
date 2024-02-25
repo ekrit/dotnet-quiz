@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Quiz.Core;
+﻿using Quiz.Core;
 using Quiz.Core.Interfaces;
 using Quiz.Infrastructure.Data.EF;
 
