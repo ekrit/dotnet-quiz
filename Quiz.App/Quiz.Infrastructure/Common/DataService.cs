@@ -1,6 +1,5 @@
-﻿using System;
+﻿using Quiz.Core;
 using Quiz.Core.Interfaces;
-using static Quiz.Core.Enums;
 
 namespace Quiz.Infrastructure.Common;
 
@@ -15,7 +14,7 @@ public abstract class DataService
         _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
     }
     
-    protected IUnitOfWork NewUnitOfWork(UnitOfWorkMode mode = UnitOfWorkMode.ReadOnly)
+    protected IUnitOfWork NewUnitOfWork(Enums.UnitOfWorkMode mode = Enums.UnitOfWorkMode.ReadOnly)
     {
         return _unitOfWorkFactory.Create(mode);
     }

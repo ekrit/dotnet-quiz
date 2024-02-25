@@ -10,9 +10,8 @@ namespace Quiz.Infrastructure.Data.EF
         {
         }
         
-        public DbSet<Pitanje> Pitanje { get; set; }
-        public DbSet<Kviz> Kviz { get; set; }
-        public DbSet<RecikliranoPitanje> RecikliranoPitanje { get; set; }
+        public DbSet<Question> Question { get; set; }
+        public DbSet<Core.Models.Quiz> Quiz { get; set; }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

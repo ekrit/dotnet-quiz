@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
-using Quiz.Core.Dtos;
+﻿using Quiz.Core.Dtos;
 using Quiz.Core.Dtos.Requests;
 using Quiz.Core.Models;
 
@@ -9,12 +6,12 @@ namespace Quiz.Core.Interfaces;
 
 public interface IQuizService
 {
-    IEnumerable<KvizDto> GetAllKvizovi();
-    KvizDto GetKvizById(int id);
-    IEnumerable<RecikliranoPitanje> GetAllReciklirana();
-    IEnumerable<PitanjeDto> GetAllPitanja();
-    Task<KvizDto> CreateKviz(CreateKvizRequest noviKviz);
-    Task<KvizDto> EditKviz(EditKvizRequest editKvizRequest);
-    Task<KvizDto> DeleteKviz(int Id);
-    Task<ExportKvizDto> GetKvizExport(int Id);
+    IEnumerable<QuizDto> GetAllQuiz();
+    QuizDto GetQuizById(int id);
+    IEnumerable<Question> GetAllRecycled();
+    IEnumerable<QuiestionDto> GetAllQuestions();
+    Task<QuizDto> CreateQuiz(CreateQuizRequest noviQuiz);
+    Task<QuizDto> EditQuiz(EditQuizRequest editQuizRequest);
+    Task<QuizDto> DeleteQuiz(int Id);
+    Task<ExportQuizDto> GetQuizExport(int Id);
 }

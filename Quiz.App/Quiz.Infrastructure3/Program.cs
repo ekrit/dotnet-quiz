@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Quiz.Core;
-using Quiz.Infrastructure.Data.EF;
 
 var builder = WebApplication.CreateBuilder(args);
 

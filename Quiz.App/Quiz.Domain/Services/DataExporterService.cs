@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Xml;
+﻿using System.Xml;
 using Newtonsoft.Json;
 using Quiz.Core;
 using Quiz.Core.Dtos;
@@ -10,7 +9,7 @@ namespace Quiz.Domain.Services;
 
 public class DataExporterService : IDataExportService
 {
-    public Task ExportCsv(ExportKvizDto data, string fileName)
+    public Task ExportCsv(ExportQuizDto data, string fileName)
     {
         var filePath = Path.Combine(Config.ExportDirectory, fileName);
 
@@ -18,15 +17,15 @@ public class DataExporterService : IDataExportService
     
         writer.WriteLine("NazivKviza,Pitanje");
     
-        foreach (var question in data.Pitanja)
+        foreach (var question in data.Questions)
         {
-            writer.WriteLine($"{data.Naziv},{question}");
+            writer.WriteLine($"{data.Name},{question}");
         }
     
         return Task.CompletedTask;
     }
 
-    public Task ExportXml(ExportKvizDto data, string fileName)
+    public Task ExportXml(ExportQuizDto data, string fileName)
     {
         var filePath = Path.Combine(Config.ExportDirectory, fileName);
 
@@ -34,10 +33,10 @@ public class DataExporterService : IDataExportService
 
         writer.WriteStartElement("Kviz");
     
-        writer.WriteElementString("NazivKviza", data.Naziv);
+        writer.WriteElementString("NazivKviza", data.Name);
     
         writer.WriteStartElement("Pitanje");
-        foreach (var question in data.Pitanja)
+        foreach (var question in data.Questions)
         {
             writer.WriteElementString("Pitanje", question);
         }
@@ -48,13 +47,13 @@ public class DataExporterService : IDataExportService
         return Task.CompletedTask;
     }
 
-    public Task ExportJson(ExportKvizDto data, string fileName)
+    public Task ExportJson(ExportQuizDto data, string fileName)
     {
         var filePath = Path.Combine(Config.ExportDirectory, fileName);
 
         using var writer = new StreamWriter(filePath);
         var json = JsonConvert.SerializeObject(data, Formatting.Indented);
-        writer.Write(json);
+        writer.Write((string?)json);
         return Task.CompletedTask;
     }
 

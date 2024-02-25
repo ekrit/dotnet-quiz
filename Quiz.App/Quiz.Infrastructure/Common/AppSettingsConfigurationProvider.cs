@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
-using Quiz.Core;
+﻿using Quiz.Core;
+using Microsoft.Extensions.Configuration;
 using Quiz.Core.Extensions;
 
 namespace Quiz.Infrastructure.Common;

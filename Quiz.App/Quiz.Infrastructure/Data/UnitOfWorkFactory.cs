@@ -3,7 +3,6 @@ using Quiz.Core;
 using Quiz.Core.Interfaces;
 using Quiz.Infrastructure.Data.EF;
 
-
 namespace Quiz.Infrastructure.Data;
 
 public class UnitOfWorkFactory : IUnitOfWorkFactory
