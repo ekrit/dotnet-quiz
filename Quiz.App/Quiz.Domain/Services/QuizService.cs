@@ -57,84 +57,91 @@ public class QuizService : DataService, IQuizService
 
     public IEnumerable<QuiestionDto> GetAllQuestions()
     {
-        var pitanja = NewRepository<Question>(NewUnitOfWork()).GetAll();
+        var data = NewRepository<Question>(NewUnitOfWork()).Get(x=>x.IsRecycled != true);
 
-        return pitanja.Select(data => new QuiestionDto()
+        return data.Select(x => new QuiestionDto()
             {
-                QuiestionId = data.QuestionId,
-                Text = data.Text,
-                Answer = data.Answer
+                QuiestionId = x.QuestionId,
+                Text = x.Text,
+                Answer = x.Answer
             }
         ).ToList();
     }
 
-    public IEnumerable<Question> GetAllRecycled()
+    public IEnumerable<RecycledQuestionDto> GetAllRecycled()
     {
-        return NewRepository<Question>(NewUnitOfWork()).GetAll();
+        var data = NewRepository<Question>(NewUnitOfWork()).Get(x => x.IsRecycled == true);
+        
+        return data.Select(x => new RecycledQuestionDto()
+            {
+                QuiestionId = x.QuestionId,
+                Text = x.Text,
+                Answer = x.Answer
+            }
+        ).ToList();
     }
 
-    public async Task<QuizDto> CreateQuiz(CreateQuizRequest noviQuizRequest)
+    public async Task<QuizDto> CreateQuiz(CreateQuizRequest newQuizRequest)
     {
         var uow = NewUnitOfWork(Enums.UnitOfWorkMode.Writable);
-        var kvizRepo = NewRepository<Core.Models.Quiz>(uow);
-        var pitanjeRepo = NewRepository<Question>(uow);
-        var recikliranaRepo = NewRepository<Question>(uow);
+        var quizRepo = NewRepository<Core.Models.Quiz>(uow);
+        var questionRepo = NewRepository<Question>(uow);
 
-        var recikliranaPitanja = recikliranaRepo.GetAll();
+        var recycledQuestions = questionRepo.Get(x=>x.IsRecycled == true);
 
-        var noviKviz = new Core.Models.Quiz()
+        var newQuiz = new Core.Models.Quiz()
         {
-            Name = noviQuizRequest.Text
+            Name = newQuizRequest.Text
         };
 
-        await kvizRepo.Add(noviKviz);
+        await quizRepo.Add(newQuiz);
         await uow.Commit();
 
-        var novaPitanja = new List<Question>();
-
-        foreach (var pitanje in noviQuizRequest.Questions)
+        var editedQuestions = new List<Question>();
+        
+        foreach (var q in newQuizRequest.Questions)
         {
-            var existingQuestion = recikliranaPitanja.FirstOrDefault(x => x.Text == pitanje.Text);
+            var existingQuestion = recycledQuestions.FirstOrDefault(x => x.Text == q.Text && x.Answer == q.Answer);
             if (existingQuestion != null)
             {
-                var novoPitanje = new Question()
+                var newQuestion = new Question()
                 {
-                    Text = pitanje.Text,
-                    Answer = pitanje.Answer,
-                    QuizId = noviKviz.QuizId
+                    Text = q.Text,
+                    Answer = q.Answer,
+                    QuizId = newQuiz.QuizId
                 };
 
-                await pitanjeRepo.Add(novoPitanje);
-                recikliranaRepo.Delete(existingQuestion);
+                await questionRepo.Add(newQuestion);
+                questionRepo.Delete(existingQuestion);
 
-                novaPitanja.Add(novoPitanje);
+                editedQuestions.Add(newQuestion);
             }
             else
             {
-                var novoPitanje = new Question()
+                var newQuestion = new Question()
                 {
-                    Text = pitanje.Text,
-                    Answer = pitanje.Answer,
-                    QuizId = noviKviz.QuizId
+                    Text = q.Text,
+                    Answer = q.Answer,
+                    QuizId = newQuiz.QuizId
                 };
 
-                await pitanjeRepo.Add(novoPitanje);
+                await questionRepo.Add(newQuestion);
 
-                novaPitanja.Add(novoPitanje);
+                editedQuestions.Add(newQuestion);
             }
         }
 
         await uow.Commit();
-        noviKviz.Questions = novaPitanja;
+        newQuiz.Questions = editedQuestions;
 
-        kvizRepo.Update(noviKviz);
+        quizRepo.Update(newQuiz);
         await uow.Commit();
 
         return new QuizDto()
         {
-            QuizId = noviKviz.QuizId,
-            Name = noviKviz.Name,
-            Questions = noviKviz.Questions.Select(data => new QuiestionDto()
+            QuizId = newQuiz.QuizId,
+            Name = newQuiz.Name,
+            Questions = newQuiz.Questions.Select(data => new QuiestionDto()
                 {
                     QuiestionId = data.QuestionId,
                     Text = data.Text,
@@ -147,71 +154,72 @@ public class QuizService : DataService, IQuizService
     public async Task<QuizDto> EditQuiz(EditQuizRequest editQuizRequest)
     {
         var uow = NewUnitOfWork(Enums.UnitOfWorkMode.Writable);
-        var kvizRepo = NewRepository<Core.Models.Quiz>(uow);
-        var kvizRepoFactory = _quizRepositoryFactory.Create(uow);
-        var pitanjeRepo = NewRepository<Question>(uow);
+        var quizRepo = NewRepository<Core.Models.Quiz>(uow);
+        var quizRepoFactory = _quizRepositoryFactory.Create(uow);
+        var questionRepo = NewRepository<Question>(uow);
         
-        var existingKviz = kvizRepoFactory.GetQuizById(editQuizRequest.QuizId);
+        var existingQuiz = quizRepoFactory.GetQuizById(editQuizRequest.QuizId);
 
-        existingKviz.Name = editQuizRequest.Name;
+        existingQuiz.Name = editQuizRequest.Name;
 
-        foreach (var pitanje in existingKviz.Questions)
-        {
-            await pitanjeRepo.Add(new Question()
+        await questionRepo.Add(existingQuiz.Questions.Select(q => new Question()
                 {
-                    Text = pitanje.Text,
-                    Answer = pitanje.Answer
+                    Text = q.Text,
+                    Answer = q.Answer,
+                    IsRecycled = true
                 }
-            );
-        }
+            ).ToList()
+        );
+        
         await uow.Commit();
         
-        var recikliranaPitanja = pitanjeRepo.GetAll();
+        var recycledQuestions = questionRepo.Get(x=>x.IsRecycled == true);
         
-        var editovanaPitanja = new List<Question>();
-        existingKviz.Questions.Clear();
-        foreach (var editPitanje in editQuizRequest.Questions)
+        var editedQuestions = new List<Question>();
+        existingQuiz.Questions.Clear();
+        foreach (var q in editQuizRequest.Questions)
         {
-            var recikliranoPitanje = recikliranaPitanja.FirstOrDefault(x =>
-                x.Text == editPitanje.Text &&
-                x.Answer == editPitanje.Answer
+            var recycledQuestion = recycledQuestions.FirstOrDefault(x =>
+                x.Text == q.Text &&
+                x.Answer == q.Answer
             );
             
-            if (recikliranoPitanje != null)
+            if (recycledQuestion != null)
             {
-                editovanaPitanja.Add(new Question()
+                editedQuestions.Add(new Question()
                     {
-                        Text = recikliranoPitanje.Text,
-                        Answer = recikliranoPitanje.Answer,
+                        QuizId = existingQuiz.QuizId,
+                        Text = recycledQuestion.Text,
+                        Answer = recycledQuestion.Answer,
                     }
                 ); 
 
-                pitanjeRepo.Delete(recikliranoPitanje);             }
+                questionRepo.Delete(recycledQuestion);             }
             else
             {
-                var novoPitanje = new Question()
+                var newQuestion = new Question()
                 {
-                    QuizId = existingKviz.QuizId,
-                    Text = editPitanje.Text,
-                    Answer = editPitanje.Answer,
+                    QuizId = existingQuiz.QuizId,
+                    Text = q.Text,
+                    Answer = q.Answer,
                 };
                 
-                await pitanjeRepo.Add(novoPitanje);
-                editovanaPitanja.Add(novoPitanje);
+                await questionRepo.Add(newQuestion);
+                editedQuestions.Add(newQuestion);
             }
         }
         await uow.Commit();
 
-        existingKviz.Questions = editovanaPitanja;
+        existingQuiz.Questions = editedQuestions;
         
-        kvizRepo.Update(existingKviz);
+        quizRepo.Update(existingQuiz);
         await uow.Commit();
 
         return new QuizDto()
         {
-            QuizId = existingKviz.QuizId,
-            Name = existingKviz.Name,
-            Questions = existingKviz.Questions.Select(data => new QuiestionDto()
+            QuizId = existingQuiz.QuizId,
+            Name = existingQuiz.Name,
+            Questions = existingQuiz.Questions.Select(data => new QuiestionDto()
                 {
                     QuiestionId = data.QuestionId,
                     Text = data.Text,
@@ -228,29 +236,30 @@ public class QuizService : DataService, IQuizService
         var quizRepoFactory = _quizRepositoryFactory.Create(uow);
         var questionRepo = NewRepository<Question>(uow);
 
-        var kvizToDelete = quizRepoFactory.GetQuizById(Id);
+        var quizToDelete = quizRepoFactory.GetQuizById(Id);
 
-        foreach (var pitanje in kvizToDelete.Questions)
+        foreach (var q in quizToDelete.Questions)
         {
-            var novoReciklirano = new Question()
+            var newRecycled = new Question()
             {
-                Text = pitanje.Text,
-                Answer = pitanje.Answer
+                Text = q.Text,
+                Answer = q.Answer,
+                IsRecycled = true
             };
 
-            await questionRepo.Add(novoReciklirano);
-            questionRepo.Delete(pitanje);
+            await questionRepo.Add(newRecycled);
+            questionRepo.Delete(q);
         }
         await uow.Commit();
 
-        quizRepo.Delete(kvizToDelete);
+        quizRepo.Delete(quizToDelete);
         await uow.Commit();
         
         return new QuizDto()
         {
-            QuizId = kvizToDelete.QuizId,
-            Name = kvizToDelete.Name,
-            Questions = kvizToDelete.Questions.Select(data => new QuiestionDto()
+            QuizId = quizToDelete.QuizId,
+            Name = quizToDelete.Name,
+            Questions = quizToDelete.Questions.Select(data => new QuiestionDto()
                 {
                     QuiestionId = data.QuestionId,
                     Text = data.Text,

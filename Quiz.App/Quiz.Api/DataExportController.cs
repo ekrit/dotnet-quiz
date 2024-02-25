@@ -33,7 +33,7 @@ public class DataExportController : ControllerBase
                 await _dataExporter.ExportXml(data, "quiz_data.xml");
                 break;
             default:
-                return Content("Format not supported!");
+                return Content("Only supported formats are 'csv', 'json' and 'xml'");
         }
 
         return Content("Data exported successfully!");
