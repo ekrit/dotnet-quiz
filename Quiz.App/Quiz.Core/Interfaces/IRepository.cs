@@ -6,6 +6,7 @@ public interface IRepository<T>
     where T : class
 {
     Task Add(T entity);
+    Task Add(IEnumerable<T> entities);
     void Update(T entity);
     void Delete(T entity);
     IEnumerable<T> GetAll();

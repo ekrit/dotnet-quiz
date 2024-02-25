@@ -40,13 +40,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/quiz/getAll", (IQuizService quizService) => quizService.GetAllQuiz());
-app.MapGet("/quiz/getAllPitanja", (IQuizService quizService) => quizService.GetAllQuestions());
-app.MapGet("/quiz/getAllReciklirana", (IQuizService quizService) => quizService.GetAllRecycled());
-app.MapGet("/quiz/getKvizById/{id}", (int id,IQuizService quizService) => quizService.GetQuizById(id));
+app.MapGet("/quiz/getAllQuestions", (IQuizService quizService) => quizService.GetAllQuestions());
+app.MapGet("/quiz/getAllRecycled", (IQuizService quizService) => quizService.GetAllRecycled());
+app.MapGet("/quiz/getQuizById/{id}", (int id,IQuizService quizService) => quizService.GetQuizById(id));
 app.MapPost("/quiz/create", async ([FromBody] CreateQuizRequest noviKviz, IQuizService quizService) => await quizService.CreateQuiz(noviKviz));
 app.MapPut("/quiz/edit", async ([FromBody] EditQuizRequest edit, IQuizService quizService) => await quizService.EditQuiz(edit));
 app.MapDelete("/quiz/deleteQuiz", (int id,IQuizService quizService) => quizService.DeleteQuiz(id));
-
 
 app.UseAuthorization();
 
